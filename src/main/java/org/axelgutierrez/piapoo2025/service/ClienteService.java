@@ -14,14 +14,38 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    /**
+     * Guarda un cliente en la base de datos.
+     * <br>
+     * El método recibe un objeto "Cliente" y lo guarda en la base de datos usando el repositorio.
+     *
+     * @param cliente el cliente que se va a guardar
+     * @return el cliente guardado con su id generado automaticamente
+     */
     public Cliente guardarCliente(Cliente cliente) {
         return clienteRepository.save(cliente);
     }
 
+    /**
+     * Obtiene una lista de todos los clientes en la base de datos.
+     * <br>
+     * El metodo consulta la base de datos a través del repositorio y devuelve una lista con todos los clientes.
+     *
+     * @return una lista con todos los clientes almacenados en la base de datos.
+     */
     public List<Cliente> listarClientes() {
         return (List<Cliente>) clienteRepository.findAll();
     }
 
+    /**
+     * Obtiene un cliente de la base de datos.
+     * <br>
+     * El metodo consulta la base de datos a través del repositorio y devuelve el cliente con el id dado.
+     *
+     * @param id el id del cliente que se quiere obtener de la base de datos.
+     * @return el cliente con el id dado.
+     * @throws RecursoNoEncontradoException si no existe el cliente con el id dado en la base de datos.
+     */
     public Cliente buscarClientePorId(Long id) throws RecursoNoEncontradoException {
         //guardamos en un optional el cliente si existe
         Optional<Cliente> cliente = clienteRepository.findById(id);
@@ -31,6 +55,18 @@ public class ClienteService {
         return cliente.get(); //si existe, obtenemos al cliente
     }
 
+    /**
+     * Actualiza un cliente en la base de datos.
+     * <br>
+     * El metodo recibe el id del cliente que se desea actualizar y un objeto "Cliente" con la información que se desea cambiar y lo actualiza en la base de datos a través del repositorio.
+     *<br>
+     * Solo se actualizan los datos que no sean null.
+     *
+     * @param id el id del cliente que se desea actualizar.
+     * @param clienteActualizado el objeto "Cliente" con la información que se desea cambiar.
+     * @return el cliente con los cambios realizados.
+     * @throws RecursoNoEncontradoException si no existe el cliente con el id dado en la base de datos.
+     */
     public Cliente actualizarCliente(Long id, Cliente clienteActualizado) throws RecursoNoEncontradoException {
         Cliente cliente = buscarClientePorId(id); //buscamos si existe
 
@@ -54,6 +90,14 @@ public class ClienteService {
         return clienteRepository.save(cliente); //sobreescribimos (solo los datos nuevos)
     }
 
+    /**
+     * Elimina un cliente de la base de datos.
+     * <br>
+     * El metodo recibe el id del cliente que se desea eliminar y lo elimina de la base de datos a través del repositorio.
+     *
+     * @param id el id del cliente que se desea eliminar.
+     * @throws RecursoNoEncontradoException si no existe el cliente con el id dado en la base de datos.
+    */
     public void eliminarCliente(Long id) throws RecursoNoEncontradoException {
         if(!clienteRepository.existsById(id)) {//si no existe el id en la bdd lanza excepcion
             throw new RecursoNoEncontradoException("Cliente no encontrado con id: " + id);
