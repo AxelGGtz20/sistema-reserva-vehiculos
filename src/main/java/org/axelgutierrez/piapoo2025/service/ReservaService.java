@@ -20,18 +20,34 @@ public class ReservaService {
     private ReservaRepository reservaRepository;
     @Autowired
     private VehiculoService vehiculoService;
+    @Autowired
+    private ClienteService clienteService;
 
+    /**
+     * Guarda una reserva en la base de datos.
+     * <br>
+     * El método recibe un objeto "Reserva" y lo guarda en la base de datos usando el repositorio.
+     * <br>
+     * Primero se valida que el vehiculo exista y que no tenga una reserva para esas fechas.
+     * <br>
+     * Si no hay ningún problema, se calcula el precio total de la reserva y se guarda en el objeto "Reserva".
+     *
+     * @param reserva el objeto "Reserva" que se va a guardar en la base de datos.
+     * @return el objeto "Reserva" guardado con su id generado automaticamente.
+     * @throws ReservaInvalidaException si el vehiculo ya tiene una reserva para esas fechas.
+     * @throws RecursoNoEncontradoException si el vehiculo o el cliente no existen en la base de datos.
+     */
     public Reserva guardarReserva(Reserva reserva) throws ReservaInvalidaException, RecursoNoEncontradoException {
 
         Vehiculo vehiculo = vehiculoService.buscarVehiculoPorId(reserva.getVehiculo().getId());
-        //validar que el cliente exista?
+        clienteService.buscarClientePorId(reserva.getCliente().getId());
 
         //Buscamos que el vehiculo no este reservado para esa fecha
         List<Reserva> reservasEnConflicto = reservaRepository.buscarReservasEnConflicto(reserva.getVehiculo().getId(), reserva.getFechaInicio(), reserva.getFechaFin());
 
         //si la lista tiene elementos ya hay una reserva para esa fecha
         if(!reservasEnConflicto.isEmpty()) {
-            throw new ReservaInvalidaException("EL vehiculo ya esta reservado para esa fecha");
+            throw new ReservaInvalidaException("El vehiculo ya esta reservado para esa fecha");
         }
 
         //Calcula los dias de la reserva (se le suma 1 por que no cuenta el ultimo)
@@ -42,10 +58,26 @@ public class ReservaService {
         return reservaRepository.save(reserva);
     }
 
+    /**
+     * Obtiene una lista de todas las reservas en la base de datos.
+     * <br>
+     * El metodo consulta la base de datos a través del repositorio y devuelve una lista con todas las reservas.
+     *
+     * @return una lista con todas las reservas almacenadas en la base de datos.
+     */
     public List<Reserva> listarReservas() {
         return (List<Reserva>) reservaRepository.findAll();
     }
 
+    /**
+     * Obtiene una reserva de la base de datos.
+     * <br>
+     * El metodo consulta la base de datos a través del repositorio y devuelve la reserva con el id dado.
+     *
+     * @param Id el id de la reserva que se quiere obtener de la base de datos.
+     * @return la reserva con el id dado.
+     * @throws RecursoNoEncontradoException si no existe la reserva con el id dado en la base de datos.
+    */
     public Reserva buscarReservaPorId(Long Id) throws RecursoNoEncontradoException {
         Optional<Reserva> reserva = reservaRepository.findById(Id);
         if(reserva.isEmpty()) {
@@ -54,6 +86,17 @@ public class ReservaService {
         return reserva.get();
     }
 
+    /**
+     * Actualiza una reserva en la base de datos.
+     * <br>
+     * El metodo recibe el id de la reserva que se desea actualizar y un objeto "Reserva" con la información que se desea cambiar y lo actualiza en la base de datos a través del repositorio.
+     *
+     * @param Id el id de la reserva que se desea actualizar.
+     * @param reservaActualizada el objeto "Reserva" con la información que se desea cambiar.
+     * @return la reserva con los cambios realizados.
+     * @throws RecursoNoEncontradoException si no existe la reserva  o el vehiculo con el id dado en la base de datos.
+     * @throws ReservaInvalidaException si el vehiculo ya tiene una reserva para esas fechas.
+     */
     public Reserva actualizarReserva(Long Id, Reserva reservaActualizada) throws RecursoNoEncontradoException, ReservaInvalidaException {
         Reserva reserva = buscarReservaPorId(Id); //buscamos si existe, lanza excepcion si no
 
@@ -108,6 +151,14 @@ public class ReservaService {
         return reservaRepository.save(reserva);
     }
 
+    /**
+     * Elimina una reserva de la base de datos.
+     * <br>
+     * El metodo recibe el id de la reserva que se desea eliminar y lo elimina de la base de datos a través del repositorio.
+     *
+     * @param Id el id de la reserva que se desea eliminar.
+     * @throws RecursoNoEncontradoException si no existe la reserva con el id dado en la base de datos.
+     */
     public void eliminarReserva(Long Id) throws RecursoNoEncontradoException {
         if(!reservaRepository.existsById(Id)) { //si no existe lanza excepcion
             throw new RecursoNoEncontradoException("Reserva no encontrada con id: " + Id);
