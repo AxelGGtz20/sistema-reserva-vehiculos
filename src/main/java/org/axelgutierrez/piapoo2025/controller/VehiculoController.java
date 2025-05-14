@@ -25,7 +25,7 @@ public class VehiculoController {
      */
     @PostMapping
     public Vehiculo crearVehiculo(@RequestBody Vehiculo vehiculo) {
-        return vehiculoService.guardarVehiculo(vehiculo);
+        return vehiculoService.guardar(vehiculo);
     }
 
     /**
@@ -37,7 +37,7 @@ public class VehiculoController {
      */
     @GetMapping
     public List<Vehiculo> mostrarVehiculos() {
-        return vehiculoService.listarVehiculos();
+        return vehiculoService.listar();
     }
 
     /**
@@ -51,7 +51,7 @@ public class VehiculoController {
      */
     @GetMapping("/{id}")
     public Vehiculo mostrarVehiculo(@PathVariable Long id) throws RecursoNoEncontradoException {
-        return vehiculoService.buscarVehiculoPorId(id);
+        return vehiculoService.buscarPorId(id);
     }
 
     /**
@@ -68,7 +68,7 @@ public class VehiculoController {
      */
     @PutMapping("/{id}")
     public Vehiculo actualizarVehiculo(@PathVariable Long id, @RequestBody Vehiculo vehiculoActualizado) throws RecursoNoEncontradoException {
-        return vehiculoService.actualizarVehiculo(id, vehiculoActualizado);
+        return vehiculoService.actualizar(id, vehiculoActualizado);
     }
 
     /**
@@ -81,7 +81,7 @@ public class VehiculoController {
      */
     @DeleteMapping("/{id}")
     public void eliminarVehiculo(@PathVariable Long id) throws RecursoNoEncontradoException {
-        vehiculoService.eliminarVehiculo(id);
+        vehiculoService.eliminar(id);
     }
 
     /**

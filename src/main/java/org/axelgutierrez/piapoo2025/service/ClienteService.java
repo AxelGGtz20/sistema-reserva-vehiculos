@@ -2,6 +2,7 @@ package org.axelgutierrez.piapoo2025.service;
 
 import org.axelgutierrez.piapoo2025.exception.RecursoNoEncontradoException;
 import org.axelgutierrez.piapoo2025.model.Cliente;
+import org.axelgutierrez.piapoo2025.model.Direccion;
 import org.axelgutierrez.piapoo2025.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ClienteService {
+public class ClienteService implements IFuncionesCompartidas<Cliente> {
     @Autowired
     private ClienteRepository clienteRepository;
 
@@ -22,7 +23,8 @@ public class ClienteService {
      * @param cliente el cliente que se va a guardar
      * @return el cliente guardado con su id generado automaticamente
      */
-    public Cliente guardarCliente(Cliente cliente) {
+    @Override
+    public Cliente guardar(Cliente cliente) {
         return clienteRepository.save(cliente);
     }
 
@@ -33,7 +35,8 @@ public class ClienteService {
      *
      * @return una lista con todos los clientes almacenados en la base de datos.
      */
-    public List<Cliente> listarClientes() {
+    @Override
+    public List<Cliente> listar() {
         return (List<Cliente>) clienteRepository.findAll();
     }
 
@@ -46,7 +49,8 @@ public class ClienteService {
      * @return el cliente con el id dado.
      * @throws RecursoNoEncontradoException si no existe el cliente con el id dado en la base de datos.
      */
-    public Cliente buscarClientePorId(Long id) throws RecursoNoEncontradoException {
+    @Override
+    public Cliente buscarPorId(Long id) throws RecursoNoEncontradoException {
         //guardamos en un optional el cliente si existe
         Optional<Cliente> cliente = clienteRepository.findById(id);
         if(cliente.isEmpty()) { //si no existe (vacío el optional) lanzamos excepcion
@@ -67,8 +71,9 @@ public class ClienteService {
      * @return el cliente con los cambios realizados.
      * @throws RecursoNoEncontradoException si no existe el cliente con el id dado en la base de datos.
      */
-    public Cliente actualizarCliente(Long id, Cliente clienteActualizado) throws RecursoNoEncontradoException {
-        Cliente cliente = buscarClientePorId(id); //buscamos si existe
+    @Override
+    public Cliente actualizar(Long id, Cliente clienteActualizado) throws RecursoNoEncontradoException {
+        Cliente cliente = buscarPorId(id); //buscamos si existe
 
         //si es null no lo quiere actualizar, si NO es null, actualizamos el atributo
         if (clienteActualizado.getNombre() != null) {
@@ -83,8 +88,26 @@ public class ClienteService {
         if (clienteActualizado.getTelefono() != null) {
             cliente.setTelefono(clienteActualizado.getTelefono());
         }
-        if (clienteActualizado.getDireccion() != null) { //la dirección tiene que actualizarse completamente
-            cliente.setDireccion(clienteActualizado.getDireccion());
+        if (clienteActualizado.getDireccion() != null) {
+            Direccion direccionNueva = clienteActualizado.getDireccion();
+            if(direccionNueva.getCalle() != null) {
+                cliente.getDireccion().setCalle(direccionNueva.getCalle());
+            }
+            if(direccionNueva.getNumCasa() != null) {
+                cliente.getDireccion().setNumCasa(direccionNueva.getNumCasa());
+            }
+            if(direccionNueva.getColonia() != null) {
+                cliente.getDireccion().setColonia(direccionNueva.getColonia());
+            }
+            if(direccionNueva.getMunicipio() != null) {
+                cliente.getDireccion().setMunicipio(direccionNueva.getMunicipio());
+            }
+            if(direccionNueva.getEstado() != null) {
+                cliente.getDireccion().setEstado(direccionNueva.getEstado());
+            }
+            if(direccionNueva.getCodigoPostal() != null) {
+                cliente.getDireccion().setCodigoPostal(direccionNueva.getCodigoPostal());
+            }
         }
 
         return clienteRepository.save(cliente); //sobreescribimos (solo los datos nuevos)
@@ -98,7 +121,8 @@ public class ClienteService {
      * @param id el id del cliente que se desea eliminar.
      * @throws RecursoNoEncontradoException si no existe el cliente con el id dado en la base de datos.
     */
-    public void eliminarCliente(Long id) throws RecursoNoEncontradoException {
+    @Override
+    public void eliminar(Long id) throws RecursoNoEncontradoException {
         if(!clienteRepository.existsById(id)) {//si no existe el id en la bdd lanza excepcion
             throw new RecursoNoEncontradoException("Cliente no encontrado con id: " + id);
         }

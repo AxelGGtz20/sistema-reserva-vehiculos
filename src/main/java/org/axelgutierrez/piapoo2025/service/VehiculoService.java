@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class VehiculoService {
+public class VehiculoService implements IFuncionesCompartidas<Vehiculo> {
     @Autowired
     private VehiculoRepository vehiculoRepository;
 
@@ -22,7 +22,8 @@ public class VehiculoService {
      * @param vehiculo el vehiculo que se va a guardar
      * @return el vehiculo guardado con su id generado automaticamente
      */
-    public Vehiculo guardarVehiculo(Vehiculo vehiculo) {
+    @Override
+    public Vehiculo guardar(Vehiculo vehiculo) {
         return vehiculoRepository.save(vehiculo);
     }
 
@@ -33,7 +34,8 @@ public class VehiculoService {
      *
      * @return una lista con todos los vehiculos almacenados en la base de datos.
      */
-    public List<Vehiculo> listarVehiculos() {
+    @Override
+    public List<Vehiculo> listar() {
         return (List<Vehiculo>) vehiculoRepository.findAll();
     }
 
@@ -46,7 +48,8 @@ public class VehiculoService {
      * @return el vehiculo con el id dado.
      * @throws RecursoNoEncontradoException si no existe el vehiculo con el id dado en la base de datos.
     */
-    public Vehiculo buscarVehiculoPorId(Long id) throws RecursoNoEncontradoException {
+    @Override
+    public Vehiculo buscarPorId(Long id) throws RecursoNoEncontradoException {
         //guardamos en un optional el vehiculo si existe
         Optional<Vehiculo> vehiculo = vehiculoRepository.findById(id);
         if(vehiculo.isEmpty()) { //si no existe (vacío el optional) lanzamos excepcion
@@ -67,8 +70,9 @@ public class VehiculoService {
      * @return el vehiculo con los cambios realizados.
      * @throws RecursoNoEncontradoException si no existe el vehiculo con el id dado en la base de datos.
     */
-    public Vehiculo actualizarVehiculo(Long id, Vehiculo vehiculoActualizado) throws RecursoNoEncontradoException {
-        Vehiculo vehiculo = buscarVehiculoPorId(id); //buscamos si existe
+    @Override
+    public Vehiculo actualizar(Long id, Vehiculo vehiculoActualizado) throws RecursoNoEncontradoException {
+        Vehiculo vehiculo = buscarPorId(id); //buscamos si existe
 
         //si es null no lo quiere actualizar, si NO es null, actualizamos el atributo
         if (vehiculoActualizado.getMarca() != null) {
@@ -101,7 +105,8 @@ public class VehiculoService {
      * @param id el id del vehiculo que se desea eliminar.
      * @throws RecursoNoEncontradoException si no existe el vehiculo con el id dado en la base de datos.
     */
-    public void eliminarVehiculo(Long id) throws RecursoNoEncontradoException {
+    @Override
+    public void eliminar(Long id) throws RecursoNoEncontradoException {
         if(!vehiculoRepository.existsById(id)) { //si no existe lanza excepcion
             throw new RecursoNoEncontradoException("Vehiculo no encontrado con id: " + id);
         }

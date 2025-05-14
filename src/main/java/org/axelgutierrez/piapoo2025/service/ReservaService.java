@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ReservaService {
+public class ReservaService implements IFuncionesCompartidas<Reserva> {
     @Autowired
     private ReservaRepository reservaRepository;
     @Autowired
@@ -37,10 +37,11 @@ public class ReservaService {
      * @throws ReservaInvalidaException si el vehiculo ya tiene una reserva para esas fechas.
      * @throws RecursoNoEncontradoException si el vehiculo o el cliente no existen en la base de datos.
      */
-    public Reserva guardarReserva(Reserva reserva) throws ReservaInvalidaException, RecursoNoEncontradoException {
+    @Override
+    public Reserva guardar(Reserva reserva) throws ReservaInvalidaException, RecursoNoEncontradoException {
 
-        Vehiculo vehiculo = vehiculoService.buscarVehiculoPorId(reserva.getVehiculo().getId());
-        clienteService.buscarClientePorId(reserva.getCliente().getId());
+        Vehiculo vehiculo = vehiculoService.buscarPorId(reserva.getVehiculo().getId());
+        clienteService.buscarPorId(reserva.getCliente().getId());
 
         //Buscamos que el vehiculo no este reservado para esa fecha
         List<Reserva> reservasEnConflicto = reservaRepository.buscarReservasEnConflicto(reserva.getVehiculo().getId(), reserva.getFechaInicio(), reserva.getFechaFin());
@@ -65,7 +66,8 @@ public class ReservaService {
      *
      * @return una lista con todas las reservas almacenadas en la base de datos.
      */
-    public List<Reserva> listarReservas() {
+    @Override
+    public List<Reserva> listar() {
         return (List<Reserva>) reservaRepository.findAll();
     }
 
@@ -78,7 +80,8 @@ public class ReservaService {
      * @return la reserva con el id dado.
      * @throws RecursoNoEncontradoException si no existe la reserva con el id dado en la base de datos.
     */
-    public Reserva buscarReservaPorId(Long Id) throws RecursoNoEncontradoException {
+    @Override
+    public Reserva buscarPorId(Long Id) throws RecursoNoEncontradoException {
         Optional<Reserva> reserva = reservaRepository.findById(Id);
         if(reserva.isEmpty()) {
             throw new RecursoNoEncontradoException("Reserva no encontrada con id: " + Id);
@@ -97,8 +100,9 @@ public class ReservaService {
      * @throws RecursoNoEncontradoException si no existe la reserva  o el vehiculo con el id dado en la base de datos.
      * @throws ReservaInvalidaException si el vehiculo ya tiene una reserva para esas fechas.
      */
-    public Reserva actualizarReserva(Long Id, Reserva reservaActualizada) throws RecursoNoEncontradoException, ReservaInvalidaException {
-        Reserva reserva = buscarReservaPorId(Id); //buscamos si existe, lanza excepcion si no
+    @Override
+    public Reserva actualizar(Long Id, Reserva reservaActualizada) throws RecursoNoEncontradoException, ReservaInvalidaException {
+        Reserva reserva = buscarPorId(Id); //buscamos si existe, lanza excepcion si no
 
         //Guardamos los valores anteriores para facilitar la validacion
         LocalDate nuevaFechaInicio = reserva.getFechaInicio();
@@ -117,7 +121,7 @@ public class ReservaService {
         }
         if (reservaActualizada.getVehiculo() != null) {
             nuevoVehiculo = reservaActualizada.getVehiculo();
-            vehiculoService.buscarVehiculoPorId(nuevoVehiculo.getId());
+            vehiculoService.buscarPorId(nuevoVehiculo.getId());
             validar = true;
         }
 
@@ -159,7 +163,8 @@ public class ReservaService {
      * @param Id el id de la reserva que se desea eliminar.
      * @throws RecursoNoEncontradoException si no existe la reserva con el id dado en la base de datos.
      */
-    public void eliminarReserva(Long Id) throws RecursoNoEncontradoException {
+    @Override
+    public void eliminar(Long Id) throws RecursoNoEncontradoException {
         if(!reservaRepository.existsById(Id)) { //si no existe lanza excepcion
             throw new RecursoNoEncontradoException("Reserva no encontrada con id: " + Id);
         }

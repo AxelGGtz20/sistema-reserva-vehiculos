@@ -28,7 +28,7 @@ public class ReservaController {
      */
     @PostMapping
     public Reserva crearReserva(@RequestBody Reserva reserva) throws RecursoNoEncontradoException, ReservaInvalidaException {
-        return reservaService.guardarReserva(reserva);
+        return reservaService.guardar(reserva);
     }
 
     /**
@@ -40,7 +40,7 @@ public class ReservaController {
      */
     @GetMapping
     public List<Reserva> mostrarReservas() {
-        return reservaService.listarReservas();
+        return reservaService.listar();
     }
 
     /**
@@ -54,7 +54,7 @@ public class ReservaController {
     */
     @GetMapping("/{id}")
     public Reserva mostrarReserva(@PathVariable Long id) throws RecursoNoEncontradoException {
-        return reservaService.buscarReservaPorId(id);
+        return reservaService.buscarPorId(id);
     }
 
     /**
@@ -72,7 +72,7 @@ public class ReservaController {
     */
     @PutMapping("/{id}")
     public Reserva actualizarReserva(@PathVariable Long id, @RequestBody Reserva reservaActualizada) throws RecursoNoEncontradoException, ReservaInvalidaException {
-        return reservaService.actualizarReserva(id, reservaActualizada);
+        return reservaService.actualizar(id, reservaActualizada);
     }
 
     /**
@@ -85,6 +85,6 @@ public class ReservaController {
     */
     @DeleteMapping("/{id}") //eliminamos una reserva
     public void eliminarReserva(@PathVariable Long id) throws RecursoNoEncontradoException {
-        reservaService.eliminarReserva(id);
+        reservaService.eliminar(id);
     }
 }

@@ -26,7 +26,7 @@ public class EmpleadoController {
      */
     @PostMapping
     public Empleado crearEmpleado(@RequestBody Empleado empleado) throws RecursoNoEncontradoException {
-        return empleadoService.guardarEmpleado(empleado);
+        return empleadoService.guardar(empleado);
     }
 
     /**
@@ -38,7 +38,7 @@ public class EmpleadoController {
      */
     @GetMapping
     public List<Empleado> mostrarEmpleados() {
-        return empleadoService.listarEmpleados();
+        return empleadoService.listar();
     }
 
     /**
@@ -52,7 +52,7 @@ public class EmpleadoController {
     */
     @GetMapping("/{id}")
     public Empleado mostrarEmpleado(@PathVariable Long id) throws RecursoNoEncontradoException {
-        return empleadoService.buscarEmpleadoPorId(id);
+        return empleadoService.buscarPorId(id);
     }
 
     /**
@@ -69,7 +69,7 @@ public class EmpleadoController {
     */
     @PutMapping("/{id}")
     public Empleado actualizarEmpleado(@PathVariable Long id, @RequestBody Empleado empleadoActualizado) throws RecursoNoEncontradoException {
-        return empleadoService.actualizarEmpleado(id, empleadoActualizado);
+        return empleadoService.actualizar(id, empleadoActualizado);
     }
 
     /**
@@ -82,6 +82,6 @@ public class EmpleadoController {
     */
     @DeleteMapping("/{id}")
     public void eliminarEmpleado(@PathVariable Long id) throws RecursoNoEncontradoException {
-        empleadoService.eliminarEmpleado(id);
+        empleadoService.eliminar(id);
     }
 }

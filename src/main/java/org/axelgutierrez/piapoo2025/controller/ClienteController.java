@@ -24,7 +24,7 @@ public class ClienteController {
      */
     @PostMapping
     public Cliente crearCliente(@RequestBody Cliente cliente) {
-        return clienteService.guardarCliente(cliente);
+        return clienteService.guardar(cliente);
     }
 
     /**
@@ -36,7 +36,7 @@ public class ClienteController {
      */
     @GetMapping
     public List<Cliente> mostrarClientes() {
-        return clienteService.listarClientes();
+        return clienteService.listar();
     }
 
 
@@ -51,7 +51,7 @@ public class ClienteController {
      */
     @GetMapping("/{id}")
     public Cliente mostrarCliente(@PathVariable Long id) throws RecursoNoEncontradoException {
-        return clienteService.buscarClientePorId(id);
+        return clienteService.buscarPorId(id);
     }
 
     /**
@@ -68,7 +68,7 @@ public class ClienteController {
      */
     @PutMapping("/{id}")
     public Cliente actualizarCliente(@PathVariable Long id, @RequestBody Cliente clienteActualizado) throws RecursoNoEncontradoException{
-        return clienteService.actualizarCliente(id, clienteActualizado);
+        return clienteService.actualizar(id, clienteActualizado);
     }
 
     /**
@@ -81,6 +81,6 @@ public class ClienteController {
      */
     @DeleteMapping("/{id}")
     public void eliminarCliente(@PathVariable Long id) throws RecursoNoEncontradoException {
-        clienteService.eliminarCliente(id);
+        clienteService.eliminar(id);
     }
 }

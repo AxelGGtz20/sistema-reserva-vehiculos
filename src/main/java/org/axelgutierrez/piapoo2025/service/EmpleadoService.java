@@ -1,6 +1,7 @@
 package org.axelgutierrez.piapoo2025.service;
 
 import org.axelgutierrez.piapoo2025.exception.RecursoNoEncontradoException;
+import org.axelgutierrez.piapoo2025.model.Direccion;
 import org.axelgutierrez.piapoo2025.model.Empleado;
 import org.axelgutierrez.piapoo2025.repository.EmpleadoRepository;
 import org.axelgutierrez.piapoo2025.repository.RolEmpleadoRepository;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class EmpleadoService {
+public class EmpleadoService implements IFuncionesCompartidas<Empleado> {
     @Autowired
     private EmpleadoRepository empleadoRepository;
     @Autowired
@@ -26,7 +27,8 @@ public class EmpleadoService {
      * @return el empleado guardado con su id generado automaticamente
      * @throws RecursoNoEncontradoException si no existe el rol del empleado en la base de datos.
      */
-    public Empleado guardarEmpleado(Empleado empleado) throws RecursoNoEncontradoException{
+    @Override
+    public Empleado guardar(Empleado empleado) throws RecursoNoEncontradoException{
         //busca si existe el rol del empleado en la base de datos antes de guardar
         if(!rolEmpleadoRepository.existsById(empleado.getRol().getId())) {
             throw new RecursoNoEncontradoException("Rol no encontrado con id: " + empleado.getRol().getId());
@@ -42,7 +44,8 @@ public class EmpleadoService {
      *
      * @return una lista con todos los empleados almacenados en la base de datos.
      */
-    public List<Empleado> listarEmpleados() {
+    @Override
+    public List<Empleado> listar() {
         return (List<Empleado>) empleadoRepository.findAll();
     }
 
@@ -55,7 +58,8 @@ public class EmpleadoService {
      * @return el empleado con el id dado.
      * @throws RecursoNoEncontradoException si no existe el empleado con el id dado en la base de datos.
     */
-    public Empleado buscarEmpleadoPorId(Long id) throws RecursoNoEncontradoException {
+    @Override
+    public Empleado buscarPorId(Long id) throws RecursoNoEncontradoException {
         //guardamos en un optional el empleado si existe
         Optional<Empleado> empleado = empleadoRepository.findById(id);
         if(empleado.isEmpty()) { //si no existe (vacío el optional) lanzamos excepcion
@@ -76,8 +80,9 @@ public class EmpleadoService {
      * @return el empleado con los cambios realizados.
      * @throws RecursoNoEncontradoException si no existe el empleado con el id dado en la base de datos.
     */
-    public Empleado actualizarEmpleado(Long id, Empleado empleadoActualizado) throws RecursoNoEncontradoException {
-        Empleado empleado = buscarEmpleadoPorId(id); //buscamos si existe
+    @Override
+    public Empleado actualizar(Long id, Empleado empleadoActualizado) throws RecursoNoEncontradoException {
+        Empleado empleado = buscarPorId(id); //buscamos si existe
 
         //si no es null actualiza ese campo
         if(empleadoActualizado.getNombre() != null) {
@@ -93,7 +98,25 @@ public class EmpleadoService {
             empleado.setTelefono(empleadoActualizado.getTelefono());
         }
         if(empleadoActualizado.getDireccion() != null) {
-            empleado.setDireccion(empleadoActualizado.getDireccion());
+            Direccion direccionNueva = empleadoActualizado.getDireccion();
+            if(direccionNueva.getCalle() != null) {
+                empleado.getDireccion().setCalle(direccionNueva.getCalle());
+            }
+            if(direccionNueva.getNumCasa() != null) {
+                empleado.getDireccion().setNumCasa(direccionNueva.getNumCasa());
+            }
+            if(direccionNueva.getColonia() != null) {
+                empleado.getDireccion().setColonia(direccionNueva.getColonia());
+            }
+            if(direccionNueva.getMunicipio() != null) {
+                empleado.getDireccion().setMunicipio(direccionNueva.getMunicipio());
+            }
+            if(direccionNueva.getEstado() != null) {
+                empleado.getDireccion().setEstado(direccionNueva.getEstado());
+            }
+            if(direccionNueva.getCodigoPostal() != null) {
+                empleado.getDireccion().setCodigoPostal(direccionNueva.getCodigoPostal());
+            }
         }
         if(empleadoActualizado.getRol() != null) { //valida que exista el nuevo rol
             if(!rolEmpleadoRepository.existsById(empleadoActualizado.getRol().getId())) {
@@ -113,7 +136,8 @@ public class EmpleadoService {
      * @param id el id del empleado que se desea eliminar.
      * @throws RecursoNoEncontradoException si no existe el empleado con el id dado en la base de datos.
     */
-    public void eliminarEmpleado(Long id) throws RecursoNoEncontradoException {
+    @Override
+    public void eliminar(Long id) throws RecursoNoEncontradoException {
         if(!empleadoRepository.existsById(id)) { //revisa que existe el empleado
             throw new RecursoNoEncontradoException("Empleado no encontrado con id: " + id);
         }
