@@ -34,4 +34,7 @@ public interface ReservaRepository extends CrudRepository<Reserva, Long> {
                                                         @Param("nuevaFechaInicio") LocalDate nuevaFechaInicio,
                                                         @Param("nuevaFechaFin") LocalDate nuevaFechaFin,
                                                         @Param("reservaId") Long reservaId);
+
+    //Obtiene el historial de reservas para un cliente en específico
+    List<Reserva> findByClienteId(Long clienteId);
 }

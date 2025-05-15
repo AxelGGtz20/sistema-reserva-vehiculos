@@ -2,7 +2,9 @@ package org.axelgutierrez.piapoo2025.controller;
 
 import org.axelgutierrez.piapoo2025.exception.RecursoNoEncontradoException;
 import org.axelgutierrez.piapoo2025.model.Cliente;
+import org.axelgutierrez.piapoo2025.model.Reserva;
 import org.axelgutierrez.piapoo2025.service.ClienteService;
+import org.axelgutierrez.piapoo2025.service.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -12,6 +14,8 @@ import java.util.List;
 public class ClienteController {
     @Autowired
     private ClienteService clienteService;
+    @Autowired
+    private ReservaService reservaService;
 
     /**
      * Endpoint para crear un nuevo cliente.
@@ -52,6 +56,20 @@ public class ClienteController {
     @GetMapping("/{id}")
     public Cliente mostrarCliente(@PathVariable Long id) throws RecursoNoEncontradoException {
         return clienteService.buscarPorId(id);
+    }
+
+    /**
+     * Endpoint para obtener la lista de todas las reservas de un cliente.
+     * <br>
+     * El metodo llama al servicio de reservas para obtener la lista de reservas que tiene un cliente y devuelve la lista.
+     *
+     * @param id el id del cliente que se desea conocer su historial.
+     * @return una lista con todos los clientes que tienen una reserva en la base de datos.
+     * @throws RecursoNoEncontradoException si no existe el cliente con el id dado en la base de datos.
+     */
+    @GetMapping("/{id}/reservas")
+    public List<Reserva> historialReservasCliente(@PathVariable Long id) throws RecursoNoEncontradoException{
+        return reservaService.obtenerReservasPorCliente(id);
     }
 
     /**

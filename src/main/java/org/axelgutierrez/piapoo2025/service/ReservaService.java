@@ -4,6 +4,7 @@ import org.axelgutierrez.piapoo2025.exception.RecursoNoEncontradoException;
 import org.axelgutierrez.piapoo2025.exception.ReservaInvalidaException;
 import org.axelgutierrez.piapoo2025.model.Reserva;
 import org.axelgutierrez.piapoo2025.model.Vehiculo;
+import org.axelgutierrez.piapoo2025.repository.ClienteRepository;
 import org.axelgutierrez.piapoo2025.repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ public class ReservaService implements IFuncionesCompartidas<Reserva> {
     private VehiculoService vehiculoService;
     @Autowired
     private ClienteService clienteService;
+    @Autowired
+    private ClienteRepository clienteRepository;
 
     /**
      * Guarda una reserva en la base de datos.
@@ -40,11 +43,18 @@ public class ReservaService implements IFuncionesCompartidas<Reserva> {
     @Override
     public Reserva guardar(Reserva reserva) throws ReservaInvalidaException, RecursoNoEncontradoException {
 
+        //validamos que el vehiculo exista en la base de datos
         Vehiculo vehiculo = vehiculoService.buscarPorId(reserva.getVehiculo().getId());
+        //validamos que el cliente exista en la base de datos
         clienteService.buscarPorId(reserva.getCliente().getId());
+        //validamos que el vehiculo no se encuentre en mantenimiento
+        if(vehiculo.getEstado().equals("EN_MANTENIMIENTO")) {
+            throw new ReservaInvalidaException("El vehiculo se encuentra en mantenimiento");
+        }
+
 
         //Buscamos que el vehiculo no este reservado para esa fecha
-        List<Reserva> reservasEnConflicto = reservaRepository.buscarReservasEnConflicto(reserva.getVehiculo().getId(), reserva.getFechaInicio(), reserva.getFechaFin());
+        List<Reserva> reservasEnConflicto = reservaRepository.buscarReservasEnConflicto(vehiculo.getId(), reserva.getFechaInicio(), reserva.getFechaFin());
 
         //si la lista tiene elementos ya hay una reserva para esa fecha
         if(!reservasEnConflicto.isEmpty()) {
@@ -169,5 +179,20 @@ public class ReservaService implements IFuncionesCompartidas<Reserva> {
             throw new RecursoNoEncontradoException("Reserva no encontrada con id: " + Id);
         }
         reservaRepository.deleteById(Id); //si existe la eliminamos
+    }
+
+    /**
+     * Obtiene el historial de reservas de un cliente.
+     * <br>
+     * El metodo recibe el id del cliente del cual desea conocer su historial de reservas y lo obtiene de la base de datos a través del repositorio.
+     * @param clienteId el id del cliente el cual se desee conocer su historial.
+     * @return la lista de reservas del cliente.
+     * @throws RecursoNoEncontradoException si el cliente no existe en la base de datos.
+     */
+    public List<Reserva> obtenerReservasPorCliente(Long clienteId) throws RecursoNoEncontradoException {
+        if(!clienteRepository.existsById(clienteId)) {
+            throw new RecursoNoEncontradoException("Cliente no encontrado con id: " + clienteId);
+        }
+        return reservaRepository.findByClienteId(clienteId);
     }
 }
