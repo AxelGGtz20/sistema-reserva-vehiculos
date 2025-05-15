@@ -1,5 +1,6 @@
 package org.axelgutierrez.piapoo2025.controller;
 
+import jakarta.validation.Valid;
 import org.axelgutierrez.piapoo2025.exception.RecursoNoEncontradoException;
 import org.axelgutierrez.piapoo2025.exception.ReservaInvalidaException;
 import org.axelgutierrez.piapoo2025.model.Reserva;
@@ -27,7 +28,7 @@ public class ReservaController {
      * @throws ReservaInvalidaException si el vehiculo ya tiene una reserva para esas fechas.
      */
     @PostMapping
-    public Reserva crearReserva(@RequestBody Reserva reserva) throws RecursoNoEncontradoException, ReservaInvalidaException {
+    public Reserva crearReserva(@RequestBody @Valid Reserva reserva) throws RecursoNoEncontradoException, ReservaInvalidaException {
         return reservaService.guardar(reserva);
     }
 

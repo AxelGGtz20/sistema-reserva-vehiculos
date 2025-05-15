@@ -1,5 +1,6 @@
 package org.axelgutierrez.piapoo2025.controller;
 
+import jakarta.validation.Valid;
 import org.axelgutierrez.piapoo2025.exception.RecursoNoEncontradoException;
 import org.axelgutierrez.piapoo2025.model.Cliente;
 import org.axelgutierrez.piapoo2025.model.Reserva;
@@ -27,7 +28,7 @@ public class ClienteController {
      * @return el cliente creado y guardado en la base de datos.
      */
     @PostMapping
-    public Cliente crearCliente(@RequestBody Cliente cliente) {
+    public Cliente crearCliente(@RequestBody @Valid Cliente cliente) {
         return clienteService.guardar(cliente);
     }
 

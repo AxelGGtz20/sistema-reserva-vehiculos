@@ -1,5 +1,6 @@
 package org.axelgutierrez.piapoo2025.controller;
 
+import jakarta.validation.Valid;
 import org.axelgutierrez.piapoo2025.exception.RecursoNoEncontradoException;
 import org.axelgutierrez.piapoo2025.model.Vehiculo;
 import org.axelgutierrez.piapoo2025.service.VehiculoService;
@@ -24,7 +25,7 @@ public class VehiculoController {
      * @return el vehiculo creado y guardado en la base de datos.
      */
     @PostMapping
-    public Vehiculo crearVehiculo(@RequestBody Vehiculo vehiculo) {
+    public Vehiculo crearVehiculo(@RequestBody @Valid Vehiculo vehiculo) {
         return vehiculoService.guardar(vehiculo);
     }
 

@@ -1,5 +1,6 @@
 package org.axelgutierrez.piapoo2025.controller;
 
+import jakarta.validation.Valid;
 import org.axelgutierrez.piapoo2025.exception.RecursoNoEncontradoException;
 import org.axelgutierrez.piapoo2025.model.Empleado;
 import org.axelgutierrez.piapoo2025.service.EmpleadoService;
@@ -25,7 +26,7 @@ public class EmpleadoController {
      * @throws RecursoNoEncontradoException si no existe el rol del empleado en la base de datos.
      */
     @PostMapping
-    public Empleado crearEmpleado(@RequestBody Empleado empleado) throws RecursoNoEncontradoException {
+    public Empleado crearEmpleado(@RequestBody @Valid Empleado empleado) throws RecursoNoEncontradoException {
         return empleadoService.guardar(empleado);
     }
 
